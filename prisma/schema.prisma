@@ -9,3 +9,62 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id           Int       @id @default(autoincrement())
+  nama_lengkap String    @db.VarChar(70)
+  password     String    @db.VarChar(20)
+  token        String?   @db.VarChar(100)
+  role         String    @default("user") @db.VarChar(5)
+  email        String    @db.VarChar(255)
+  pesanan      Pesanan[]
+
+  @@map("users")
+}
+
+model Pesanan {
+  id                Int             @id @default(autoincrement())
+  tanggal_pesaanan  DateTime        @default(now())
+  status            String          @db.VarChar(20)
+  total             Int             @db.UnsignedInt
+  metode_pembayaran String          @db.VarChar(20)
+  id_user           Int
+  detail_pesanan    DetailPesanan[]
+  user              User            @relation(fields: [id_user], references: [id], onDelete: Cascade)
+
+  @@map("pesanan")
+}
+
+model DetailPesanan {
+  id_pesanan Int
+  id_produk  Int
+  jumlah     Int @db.UnsignedInt
+  harga      Int @db.UnsignedInt
+
+  pesanan Pesanan @relation(fields: [id_pesanan], references: [id], onDelete: Cascade)
+  produk  Produk  @relation(fields: [id_produk], references: [id], onDelete: Cascade)
+
+  @@id([id_pesanan, id_produk])
+}
+
+model Produk {
+  id             Int             @id @default(autoincrement())
+  nama           String          @db.VarChar(30)
+  harga          Int             @db.UnsignedInt
+  jumlah         Int             @db.UnsignedInt
+  deskripsi      String          @db.VarChar(1000)
+  gambar         String          @db.VarChar(255)
+  id_kategori    Int
+  detail_pesanan DetailPesanan[]
+  kategori       Kategori        @relation(fields: [id_kategori], references: [id], onDelete: Cascade)
+
+  @@map("produk")
+}
+
+model Kategori {
+  id     Int      @id @default(autoincrement())
+  nama   String   @db.VarChar(50)
+  Produk Produk[]
+
+  @@map("kategori")
+}
