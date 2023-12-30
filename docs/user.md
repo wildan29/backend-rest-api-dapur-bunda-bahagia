@@ -33,3 +33,12 @@ Response Body Error :
 ```
 
 ## Login User API (DONE)
+
+Request Body :
+
+```json
+{
+  "email": "wildan",
+  "password": "apa hayo"
+}
+```

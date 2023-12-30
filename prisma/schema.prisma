@@ -13,7 +13,7 @@ datasource db {
 model User {
   id           Int       @id @default(autoincrement())
   nama_lengkap String    @db.VarChar(70)
-  password     String    @db.VarChar(20)
+  password     String    @db.VarChar(100)
   token        String?   @db.VarChar(100)
   role         String    @default("user") @db.VarChar(5)
   email        String    @db.VarChar(255)
