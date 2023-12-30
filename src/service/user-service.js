@@ -44,18 +44,17 @@ const login = async (request) => {
       email: request.email,
     },
     select: {
-      email: true,
       password: true,
       id: true,
     },
   });
 
   if (!user) {
-    throw new ResponseError(401, "Username or password wrong");
+    throw new ResponseError(402, "Username or password wrong");
   }
 
   // check password with bcyrpt
-  const isPasswordValid = await bcrypt.compare("mang eak", user.password);
+  const isPasswordValid = await bcrypt.compare(request.password, user.password);
 
   // if validation password failed
   if (!isPasswordValid) {

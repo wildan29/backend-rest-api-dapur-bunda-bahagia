@@ -29,7 +29,7 @@ export const authMiddleware = async (req, res, next) => {
         .end();
     } else {
       req.user = user;
-      logger.warn(admin);
+      logger.warn(user);
       next();
     }
   }

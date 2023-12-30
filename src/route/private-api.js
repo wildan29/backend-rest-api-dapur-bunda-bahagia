@@ -5,4 +5,8 @@ import { authMiddleware } from "../middleware/auth-middleware.js";
 const privateRouter = express.Router();
 privateRouter.use(authMiddleware);
 
-privateRouter.get("")
+privateRouter.get("/api/products", produkController.getAll)
+
+export{
+    privateRouter
+}
