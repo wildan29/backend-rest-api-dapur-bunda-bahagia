@@ -5,5 +5,6 @@ const publicRoute = express.Router();
 
 // User route
 publicRoute.post("/api/users", userController.register);
+publicRoute.post("/api/login", userController.login);
 
 export { publicRoute };

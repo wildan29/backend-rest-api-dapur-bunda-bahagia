@@ -1,12 +1,15 @@
 import { prismaClient } from "../application/database.js";
 import { ResponseError } from "../error/response-error.js";
-import { registerUserValidation } from "../validation/user-validation.js";
+import {
+  loginValidation,
+  registerValidation,
+} from "../validation/user-validation.js";
 import { validate } from "../validation/validation.js";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 
 const register = async (request) => {
-  request = validate(registerUserValidation, request);
+  request = validate(registerValidation, request);
 
   // Check whether email has been registered or not
   const countUser = await prismaClient.user.count({
@@ -17,7 +20,7 @@ const register = async (request) => {
 
   // if email is already registerd then throw error
   if (countUser === 1) {
-    throw new ResponseError(400, "Email Already Exists");
+    throw new ResponseError(400, "Email Already registered");
   }
 
   // Hash password using bcrypt
@@ -32,6 +35,51 @@ const register = async (request) => {
   };
 };
 
+const login = async (request) => {
+  request = validate(loginValidation, request);
+
+  // cek if users is exsit or no
+  const user = await prismaClient.user.findFirst({
+    where: {
+      email: request.email,
+    },
+    select: {
+      email: true,
+      password: true,
+      id: true,
+    },
+  });
+
+  if (!user) {
+    throw new ResponseError(401, "Username or password wrong");
+  }
+
+  // check password with bcyrpt
+  const isPasswordValid = await bcrypt.compare("mang eak", user.password);
+
+  // if validation password failed
+  if (!isPasswordValid) {
+    throw new ResponseError(401, "Username or password wrong");
+  }
+
+  // create token with uuid
+  const token = uuid().toString();
+
+  return prismaClient.user.update({
+    data: {
+      token: token,
+    },
+    where: {
+      id: user.id,
+    },
+    select: {
+      token: true,
+      role: true,
+    },
+  });
+};
+
 export default {
   register,
+  login,
 };
